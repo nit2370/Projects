@@ -1,0 +1,40 @@
+#!/bin/bash
+
+echo "Enter array size"
+read n
+
+echo "Enter array elements"
+
+i=0
+while [ $i -lt $n ]; do
+  read nos[$i]
+  i=`expr $i + 1`
+done
+
+echo "Array elements"
+i=0
+while [ $i -lt $n ]; do
+  echo ${nos[$i]}
+  i=`expr $i + 1`
+done
+
+# Selection Sort
+for ((i = 0; i < n - 1; i++)); do
+  min_index=$i
+
+  for ((j = i + 1; j < n; j++)); do
+    if [ ${nos[$j]} -lt ${nos[$min_index]} ]; then
+      min_index=$j
+    fi
+  done
+
+  # Swap
+  temp=${nos[$i]}
+  nos[$i]=${nos[$min_index]}
+  nos[$min_index]=$temp
+done
+
+echo "Sorted elements (Selection Sort)"
+for ((i = 0; i < n; i++)); do
+  echo ${nos[$i]}
+done
