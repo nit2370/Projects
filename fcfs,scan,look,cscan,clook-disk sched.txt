@@ -1,0 +1,440 @@
+Code: FCFS
+
+#include "stdio.h"
+#include "stdlib.h"
+#include "stdbool.h"
+int main()
+{
+    int i, no_of_requests, initial_head;
+    printf("Enter the number of requests: ");
+    scanf("%d", &no_of_requests);
+    int request[no_of_requests];
+    printf("Enter the requests: ");
+    for (i = 0; i < no_of_requests; ++i)
+    {
+        scanf("%d", &request[i]);
+    }
+    printf("Enter initial position of R/W head: ");
+    scanf("%d", &initial_head);
+    int seek_time = 0;
+    printf("%d -> ", initial_head);
+    for (i = 0; i < no_of_requests; i++)
+    {
+        if (i == no_of_requests - 1)
+            printf("%d\n", request[i]);
+        else
+            printf("%d -> ", request[i]);
+        seek_time += abs(request[i] - initial_head);
+        initial_head = request[i];
+    }
+    printf("Seek Time: %d\n", seek_time);
+}
+
+
+******************************************************************************************************
+
+Code: SSTF
+
+#include "stdio.h"
+#include "stdlib.h"
+#include "stdbool.h"
+
+int main()
+{
+    int i, no_of_requests, initial_head;
+    printf("Enter the number of requests: ");
+    scanf("%d", &no_of_requests);
+
+    // Arrays to store requests and their status (visited or not)
+    int req_track_numbers[no_of_requests];
+    bool visited[no_of_requests];
+
+    // Input requests and initialize flags
+    printf("Enter the requests: ");
+    for (i = 0; i < no_of_requests; ++i)
+    {
+        scanf("%d", &req_track_numbers[i]);
+        visited[i] = false;
+    }
+
+    // Input initial position of the R/W head
+    printf("Enter initial position of R/W head: ");
+    scanf("%d", &initial_head);
+
+    int seek_time = 0;
+    printf("%d -> ", initial_head);
+
+    int n = no_of_requests;
+    while (n)
+    {
+        int min = 1e9;
+        int min_track_number, position;
+
+        // Find the request with the shortest seek time
+        for (i = 0; i < no_of_requests; i++)
+        {
+            if (abs(initial_head - req_track_numbers[i]) < min && !visited[i])
+            {
+                min = abs(initial_head - req_track_numbers[i]);
+                min_track_number = req_track_numbers[i];
+                position = i;
+            }
+        }
+
+        // Move the head to the selected track
+        initial_head = req_track_numbers[position];
+        visited[position] = true;
+        printf("%d ->", min_track_number);
+        seek_time += min;
+        n--;
+    }
+
+    printf("\nSeek Time: %d\n", seek_time);
+
+    return 0;
+}
+*********************************************************************************************************
+
+Code: SCAN
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_REQUESTS 100
+
+// Custom comparison function for sorting requests
+int compare(const void *a, const void *b)
+{
+    return (*(int *)a - *(int *)b);
+}
+
+// Function to perform the SCAN algorithm
+void SCAN(int requests[], int size, int initialPosition, const char *direction)
+{
+    int seekCount = 0;
+    int head = initialPosition;
+
+    // Arrays to store requests on the left and right sides
+    int leftRequests[MAX_REQUESTS], rightRequests[MAX_REQUESTS];
+    int leftSize = 0, rightSize = 0;
+
+    // Initialize the left and right sides based on the initial direction
+    if (strcmp(direction, "left") == 0)
+    {
+        leftRequests[leftSize++] = 0;
+    }
+    else if (strcmp(direction, "right") == 0)
+    {
+        rightRequests[rightSize++] = 199; // Adjust for the disk size
+    }
+
+    // Partition requests into left and right sides
+    for (int i = 0; i < size; i++)
+    {
+        if (requests[i] < head)
+        {
+            leftRequests[leftSize++] = requests[i];
+        }
+        else
+        {
+            rightRequests[rightSize++] = requests[i];
+        }
+    }
+
+    // Sort both sides
+    qsort(leftRequests, leftSize, sizeof(int), compare);
+    qsort(rightRequests, rightSize, sizeof(int), compare);
+
+    // Process the requests while moving in the specified direction
+    for (int i = 0; i < 2; i++)
+    {
+        if (strcmp(direction, "left") == 0)
+        {
+            for (int j = leftSize - 1; j >= 0; j--)
+            {
+                int track = leftRequests[j];
+                printf("%d ", track); // Print the current track
+                seekCount += abs(track - head);
+                head = track;
+            }
+            direction = "right";
+        }
+        else if (strcmp(direction, "right") == 0)
+        {
+            for (int j = 0; j < rightSize; j++)
+            {
+                int track = rightRequests[j];
+                printf("%d ", track); // Print the current track
+                seekCount += abs(track - head);
+                head = track;
+            }
+            direction = "left";
+        }
+    }
+
+    printf("\nSeek Time: %d\n", seekCount);
+}
+
+int main()
+{
+    int requestCount, initialPosition;
+    char direction[10];
+
+    printf("Enter initial position of R/W head: ");
+    scanf("%d", &initialPosition);
+
+    printf("Enter Direction (left or right): ");
+    scanf("%s", direction);
+
+    printf("Enter the number of requests: ");
+    scanf("%d", &requestCount);
+
+    int requests[MAX_REQUESTS];
+
+    printf("Enter the requests: ");
+    for (int i = 0; i < requestCount; i++)
+    {
+        scanf("%d", &requests[i]);
+    }
+
+    SCAN(requests, requestCount, initialPosition, direction);
+
+    return 0;
+}
+
+***********************************************************************************************************
+
+Code: C- SCAN
+
+#include <bits/stdc++.h>
+using namespace std;
+
+void CSCAN(vector<int>& arr, int head) {
+    int seek_count = 0;
+    int distance, cur_track;
+    vector<int> left, right;
+    vector<int> seek_sequence;
+
+    left.push_back(0);
+    right.push_back(200);
+
+    for (int i = 0; i < arr.size(); i++) {
+        if (arr[i] < head)
+            left.push_back(arr[i]);
+        if (arr[i] > head)
+            right.push_back(arr[i]);
+    }
+
+    sort(left.begin(), left.end());
+    sort(right.begin(), right.end());
+
+    for (int i = 0; i < right.size(); i++) {
+        cur_track = right[i];
+        seek_sequence.push_back(cur_track);
+
+        distance = abs(cur_track - head);
+        seek_count += distance;
+        head = cur_track;
+    }
+
+    head = 0;
+    seek_count += (200 - 1);
+
+    for (int i = 0; i < left.size(); i++) {
+        cur_track = left[i];
+        seek_sequence.push_back(cur_track);
+
+        distance = abs(cur_track - head);
+        seek_count += distance;
+        head = cur_track;
+    }
+    seek_count -= 1;
+
+    cout << "Seek Sequence is:" << endl;
+
+    for (int i = 0; i < seek_sequence.size(); i++) {
+        cout << seek_sequence[i] << " ";
+    }
+    cout << "\nSeek Time: " << seek_count << endl;
+}
+
+int main() {
+    int size, head;
+    cout << "Enter the number of requests: ";
+    cin >> size;
+
+    vector<int> arr(size);
+    cout << "Enter the requests: ";
+    for (int i = 0; i < size; i++) {
+        cin >> arr[i];
+    }
+
+    cout << "Enter the initial position of R/W head: ";
+    cin >> head;
+
+    cout << "Initial position of head: " << head << endl;
+    CSCAN(arr, head);
+
+    return 0;
+}
+
+*********************************************************************************************
+
+Code: LOOK
+
+#include <bits/stdc++.h>
+using namespace std;
+
+int disk_size = 200;
+
+void LOOK(int arr[], int head, string direction, int size)
+{
+    int seek_count = 0;
+    int distance, cur_track;
+    vector<int> left, right;
+    vector<int> seek_sequence;
+
+    for (int i = 0; i < size; i++) {
+        if (arr[i] < head)
+            left.push_back(arr[i]);
+        if (arr[i] > head)
+            right.push_back(arr[i]);
+    }
+
+    std::sort(left.begin(), left.end());
+    std::sort(right.begin(), right.end());
+
+    int run = 2;
+    while (run--) {
+        if (direction == "left") {
+            for (int i = left.size() - 1; i >= 0; i--) {
+                cur_track = left[i];
+                seek_sequence.push_back(cur_track);
+                distance = abs(cur_track - head);
+                seek_count += distance;
+                head = cur_track;
+            }
+            direction = "right";
+        }
+        else if (direction == "right") {
+            for (int i = 0; i < right.size(); i++) {
+                cur_track = right[i];
+                seek_sequence.push_back(cur_track);
+                distance = abs(cur_track - head);
+                seek_count += distance;
+                head = cur_track;
+            }
+            direction = "left";
+        }
+    }
+
+    cout << "Seek Sequence is" << endl;
+
+    for (int i = 0; i < seek_sequence.size(); i++) {
+        cout << seek_sequence[i] << " ";
+    }
+    cout << "\nSeek Time: " << seek_count << endl;
+
+}
+
+int main()
+{
+    int size;
+    cout << "Enter the number of requests: ";
+    cin >> size;
+
+    int arr[size];
+    int head;
+    string direction;
+
+    cout << "Enter " << size << " requests: ";
+    for (int i = 0; i < size; i++) {
+        cin >> arr[i];
+    }
+
+    cout << "Enter initial position of head: ";
+    cin >> head;
+
+    cout << "Enter direction (left or right): ";
+    cin >> direction;
+
+    LOOK(arr, head, direction, size);
+
+    return 0;
+}
+
+*************************************************************************************************
+
+Code: C-LOOK
+
+#include <bits/stdc++.h>
+using namespace std;
+
+void CSCAN(vector<int>& arr, int head) {
+    int seek_count = 0;
+    int distance, cur_track;
+    vector<int> left, right;
+    vector<int> seek_sequence;
+
+    // left.push_back(0);
+    // right.push_back(200);
+
+    for (int i = 0; i < arr.size(); i++) {
+        if (arr[i] < head)
+            left.push_back(arr[i]);
+        if (arr[i] > head)
+            right.push_back(arr[i]);
+    }
+
+    sort(left.begin(), left.end());
+    sort(right.begin(), right.end());
+
+    for (int i = 0; i < right.size(); i++) {
+        cur_track = right[i];
+        seek_sequence.push_back(cur_track);
+
+        distance = abs(cur_track - head);
+        seek_count += distance;
+        head = cur_track;
+    }
+
+    seek_count += abs(head - left[0]);
+    head = left[0];
+    for (int i = 0; i < left.size(); i++) {
+        cur_track = left[i];
+        seek_sequence.push_back(cur_track);
+
+        distance = abs(cur_track - head);
+        seek_count += distance;
+        head = cur_track;
+    }
+    // seek_count -= 1;
+
+    cout << "Total number of seek operations = " << seek_count << endl;
+    cout << "Seek Sequence is:" << endl;
+
+    for (int i = 0; i < seek_sequence.size(); i++) {
+        cout << seek_sequence[i] << " ";
+    }
+}
+
+int main() {
+    int size, head;
+    cout << "Enter the number of requests: ";
+    cin >> size;
+
+    vector<int> arr(size);
+    cout << "Enter the requests: ";
+    for (int i = 0; i < size; i++) {
+        cin >> arr[i];
+    }
+
+    cout << "Enter the initial position of R/W head: ";
+    cin >> head;
+
+    cout << "Initial position of head: " << head << endl;
+    CSCAN(arr, head);
+
+    return 0;
+}

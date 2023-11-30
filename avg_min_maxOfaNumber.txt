@@ -1,0 +1,93 @@
+#!/bin/bash
+
+# Function to calculate the sum of digits in a number
+calculate_sum_of_digits() {
+  local num=$1
+  local sum=0
+
+  while [ $num -gt 0 ]; do
+    digit=$((num % 10))
+    sum=$((sum + digit))
+    num=$((num / 10))
+  done
+
+  echo $sum
+}
+
+# Function to calculate the average of digits in a number
+calculate_average_of_digits() {
+  local num=$1
+  local sum_of_digits=$(calculate_sum_of_digits $num)
+  local num_digits=${#num}
+  local average=$(bc -l <<< "scale=2; $sum_of_digits / $num_digits")
+  
+  echo $average
+}
+
+# Function to find the maximum digit in a number
+find_maximum_digit() {
+  local num=$1
+  local max_digit=0
+
+  while [ $num -gt 0 ]; do
+    digit=$((num % 10))
+    if [ $digit -gt $max_digit ]; then
+      max_digit=$digit
+    fi
+    num=$((num / 10))
+  done
+
+  echo $max_digit
+}
+
+# Function to find the minimum digit in a number
+find_minimum_digit() {
+  local num=$1
+  local min_digit=9
+
+  while [ $num -gt 0 ]; do
+    digit=$((num % 10))
+    if [ $digit -lt $min_digit ]; then
+      min_digit=$digit
+    fi
+    num=$((num / 10))
+  done
+
+  echo $min_digit
+}
+
+# Input number
+echo "Enter a number: "
+read input_number
+
+# Menu options
+echo "Menu:"
+echo "1. Calculate Sum of Digits"
+echo "2. Calculate Average of Digits"
+echo "3. Find Maximum Digit"
+echo "4. Find Minimum Digit"
+
+echo "Enter your choice (1/2/3/4): "
+read choice
+
+case $choice in
+  1)
+    sum_of_digits=$(calculate_sum_of_digits $input_number)
+    echo "Sum of digits: $sum_of_digits"
+    ;;
+  2)
+    average=$(calculate_average_of_digits $input_number)
+    echo "Average of digits: $average"
+    ;;
+  3)
+    max_digit=$(find_maximum_digit $input_number)
+    echo "Maximum digit: $max_digit"
+    ;;
+  4)
+    min_digit=$(find_minimum_digit $input_number)
+    echo "Minimum digit: $min_digit"
+    ;;
+  *)
+    echo "Invalid choice. Please choose 1, 2, 3, or 4."
+    ;;
+esac

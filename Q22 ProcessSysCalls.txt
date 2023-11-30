@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <signal.h>
+
+int main() {
+    pid_t child_pid;
+    int status;
+
+    printf("Parent process (PID: %d)\n", getpid());
+
+    child_pid = fork();
+
+    if (child_pid == -1) {
+        perror("Fork failed");
+        exit(1);
+    }
+
+    if (child_pid == 0) {
+        // This code is executed by the child process
+        printf("Child process (PID: %d, Parent PID: %d)\n", getpid(), getppid());
+
+        // Replace the child process with a new program (ls command)
+        execlp("ls", "ls", "-l", (char *)NULL);
+
+        // If execlp fails, it will reach this point
+        perror("Exec failed");
+        exit(1);
+    } else {
+        // This code is executed by the parent process
+        printf("Parent waiting for child to complete...\n");
+        wait(&status); // Wait for the child process to finish
+
+        if (WIFEXITED(status)) {
+            printf("Child process exited with status: %d\n", WEXITSTATUS(status));
+        }
+
+        // Send a signal to the child process
+        printf("Parent sending SIGUSR1 to child...\n");
+        kill(child_pid, SIGUSR1);
+    }
+
+    printf("Parent exiting.\n");
+    exit(0);
+}

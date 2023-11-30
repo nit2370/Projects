@@ -1,0 +1,124 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+void calculateNeedMatrix(int max[10][10], int alloc[10][10], int need[10][10], int n, int m)
+{
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < m; j++)
+        {
+            need[i][j] = max[i][j] - alloc[i][j];
+        }
+    }
+}
+
+bool isSafe(int processes[10], int avail[10], int max[10][10], int alloc[10][10], int n, int m)
+{
+    int need[10][10];
+    calculateNeedMatrix(max, alloc, need, n, m);
+
+    bool flag[10] = {false};
+    int safeSeq[10];
+    int avail_new[10];
+    for (int i = 0; i < m; i++)
+    {
+        avail_new[i] = avail[i];
+    }
+
+    int count = 0;
+    while (count < n)
+    {
+        bool found = false;
+        for (int i = 0; i < n; i++)
+        {
+            if (flag[i] == false)
+            {
+                bool canAllocate = true;
+                for (int j = 0; j < m; j++)
+                {
+                    if (need[i][j] > avail_new[j])
+                    {
+                        canAllocate = false;
+                        break;
+                    }
+                }
+                if (canAllocate)
+                {
+                    for (int j = 0; j < m; j++)
+                    {
+                        avail_new[j] += alloc[i][j];
+                    }
+                    safeSeq[count++] = i;
+                    flag[i] = true;
+                    found = true;
+                }
+            }
+        }
+        if (!found)
+        {
+            printf("No safe sequence exists.\n");
+            return false;
+        }
+    }
+
+    printf("PID | Allocation | Max      | Need\n");
+    for (int i = 0; i < n; i++)
+    {
+        printf("%2d  |", processes[i]);
+        for (int j = 0; j < m; j++)
+        {
+            printf(" %d", alloc[i][j]);
+        }
+        printf("    |");
+        for (int j = 0; j < m; j++)
+        {
+            printf(" %d", max[i][j]);
+        }
+        printf("  |");
+        for (int j = 0; j < m; j++)
+        {
+            printf(" %d", need[i][j]);
+        }
+        printf("\n");
+    }
+    printf("***************************************");
+    printf("\n");
+    printf("Safe Sequence: ");
+    for (int i = 0; i < n; i++)
+    {
+        printf("%d", processes[safeSeq[i]]);
+        if (i < n - 1)
+        {
+            printf("-> ");
+        }
+    }
+    printf("\n");
+    printf("\n");
+    return true;
+}
+
+int main()
+{
+    int n, m;
+    int processes[10] = {1, 2, 3, 4, 5};
+    int max[10][10] = {
+        {0, 0, 1, 2},
+        {1, 7, 5, 0},
+        {2, 3, 5, 6},
+        {0, 6, 5, 2},
+        {0, 6, 5, 6}};
+    int alloc[10][10] = {
+        {0, 0, 1, 2},
+        {1, 0, 0, 0},
+        {1, 3, 5, 4},
+        {0, 6, 3, 2},
+        {0, 0, 1, 4}};
+    int avail[10] = {1, 5, 2, 0};
+
+    n = 5; // Number of processes
+    m = 4; // Number of resources
+
+    printf("\n");
+    isSafe(processes, avail, max, alloc, n, m);
+    return 0;
+}

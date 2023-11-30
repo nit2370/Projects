@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Define numbers
+num1=10
+num2=5
+
+# Perform arithmetic operations
+addition=$((num1 + num2))
+subtraction=$((num1 - num2))
+multiplication=$((num1 * num2))
+division=$((num1 / num2))
+
+# Store results in respective files
+echo "Addition result: $addition" > addition_result.txt
+echo "Subtraction result: $subtraction" > subtraction_result.txt
+echo "Multiplication result: $multiplication" > multiplication_result.txt
+echo "Division result: $division" > division_result.txt
+
+echo "Arithmetic operations completed and results stored in files."

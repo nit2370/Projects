@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# i. Redirect the output of ls command to a file named outfile. Use this as an input file for remaining commands.
+case "$1" in
+    "i")
+        ls > outfile
+        ;;
+esac
+
+# ii. To select the lines in a file which have a digit as one of the characters in that line and redirect the output to the file named list.
+case "$1" in
+    "ii")
+        grep '[0-9]' outfile > list
+        ;;
+esac
+
+# iii. Assign execute permission to the owner and remove read permission from others for an ordinary file named test by relative way.
+case "$1" in
+    "iii")
+        chmod u+x,o-r test
+        ;;
+esac
+
+# iv. Create an alias named rm that always deletes files interactively.
+case "$1" in
+    "iv")
+        echo "alias rm='rm -i'"
+        ;;
+esac
+
+# v. Count the currently logged-in users to the system.
+case "$1" in
+    "v")
+        who | wc -l
+        ;;
+esac

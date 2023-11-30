@@ -1,0 +1,20 @@
+#!/bin/bash
+
+while true; do
+  echo -e "1. Add\n2. Sub\n3. Mul\n4. Div\n5. Exit"
+  echo "Enter two numbers"
+  read n1 n2
+  echo "Enter your choice"
+  read ch
+
+  case $ch in
+    1) Ans=$(echo "$n1 + $n2" | bc);;
+    2) Ans=$(echo "$n1 - $n2" | bc);;
+    3) Ans=$(echo "$n1 * $n2" | bc);;
+    4) Ans=$(echo "scale=2; $n1 / $n2" | bc);;
+    5) exit ;;
+    *) echo "Wrong choice, enter again";;
+  esac
+
+  echo "Ans=$Ans"
+done

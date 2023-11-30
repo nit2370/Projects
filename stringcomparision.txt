@@ -1,0 +1,15 @@
+#!/bin/bash
+
+echo "Enter the 1st string:"
+read str1
+
+echo "Enter the 2nd string:"
+read str2
+
+if [[ "$str1" > "$str2" ]]; then
+  echo "$str1 is greater than $str2"
+elif [[ "$str1" < "$str2" ]]; then
+  echo "$str2 is greater than $str1"
+else
+  echo "Both strings are equal"
+fi

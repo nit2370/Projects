@@ -1,0 +1,49 @@
+#!/bin/bash
+
+while true; do
+    echo -e "1. Redirect cat output to outfile\n2. List hidden files\n3. Modify permissions for test.txt\n4. Create soft and hard links\n5. Convert lowercase to uppercase\n6. Extract 1st and 10th character\n7. Display repeated lines\n8. Exit"
+
+    read -p "Enter your choice: " choice
+
+    case $choice in
+        1)
+            # Redirect the output of cat command to a file named outfile. Use this as an input file for remaining commands.
+            cat test.txt > outfile
+            ;;
+        2)
+            # List all hidden files under the current directory and store in the "hidden" file
+            ls -a > hidden
+            ;;
+        3)
+            # Assign write permission to the owner and remove execute permission from others for an ordinary file named test by absolute way.
+            chmod u+w,o-x C:\\Users\\choud\\OneDrive\\Desktop\\everything\\5th Sem\\OS\\OS_Prog\\test.txt
+            ;;
+        4)
+            # Create soft and hard links for the given file
+            # Create a soft link
+            ln -s test.txt link2.txt
+            # Create a hard link
+            ln test.txt link1.txt
+            ;;
+        5)
+            # Convert lowercase to uppercase of a given file
+            tr '[:lower:]' '[:upper:]' < test.txt > outfile.txt
+            ;;
+        6)
+            # Extract 1st and 10th character of a given file
+            cut -c 1,10 test.txt > extract.txt
+            ;;
+        7)
+            # Display how many times lines are repeated in a given file
+            sort text.txt | uniq -c
+            ;;
+        8)
+            # Exit the script
+            exit
+            ;;
+        *)
+            echo "Invalid choice. Enter a number between 1 and 8."
+            ;;
+    esac
+
+done

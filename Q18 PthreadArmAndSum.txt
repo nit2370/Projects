@@ -1,0 +1,62 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+
+// Function to calculate the sum of digits of a number
+void *sumOfDigits(void *arg) {
+    int num = *(int *)arg;
+    int digit, sum=0;
+    // int sum = 0;
+    
+    while (num > 0) {
+        sum += num % 10;
+        num /= 10;
+    }
+    
+    printf("Sum of digits: %d\n", sum);
+    
+    pthread_exit(NULL);
+}
+
+// Function to check if a number is an Armstrong number
+void *isArmstrongNumber(void *arg) {
+    int num = *(int *)arg;
+    int originalNum = num;
+    int sum = 0;
+    int digit;
+
+    while (originalNum > 0) {
+        digit = originalNum % 10;
+        sum += digit * digit * digit;
+        originalNum /= 10;
+    }
+
+    if (sum == num) {
+        printf("%d is an Armstrong number.\n", num);
+    } else {
+        printf("%d is not an Armstrong number.\n", num);
+    }
+
+    pthread_exit(NULL);
+}
+
+int main() {
+    int number;
+    printf("Enter a number: ");
+    scanf("%d", &number);
+
+    pthread_t thread_sum, thread_armstrong;
+
+    // Create threads for sum of digits and Armstrong number operations
+    if (pthread_create(&thread_sum, NULL, sumOfDigits, &number) != 0 || 
+        pthread_create(&thread_armstrong, NULL, isArmstrongNumber, &number) != 0) {
+        perror("Thread creation failed");
+        exit(1);
+    }
+
+    // Wait for both threads to finish
+    pthread_join(thread_sum, NULL);
+    pthread_join(thread_armstrong, NULL);
+
+    return 0;
+}

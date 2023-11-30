@@ -1,0 +1,205 @@
+a.	Using Semaphores
+
+Code:
+#include <stdio.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <unistd.h>
+
+sem_t mutex, db; ////mutex for readCount updation and db for accessing shared resource
+int readCount = 0;
+
+void *reader(void *arg) {
+    int reader_id = *(int *)arg;
+
+    // Reader trying to read
+    printf("Reader %d is trying to read...\n", reader_id);
+    sem_wait(&mutex);
+    readCount++;
+    if (readCount == 1) {
+        sem_wait(&db);
+    }
+    sem_post(&mutex);
+
+    // Reading data
+    printf("Reader %d is reading...\n", reader_id);
+    sleep(1);
+
+    // Reader leaving
+    sem_wait(&mutex);
+    readCount--;
+    if (readCount == 0) {
+        sem_post(&db);
+    }
+    sem_post(&mutex);
+
+    printf("Reader %d is leaving...\n", reader_id);
+    sleep(1);
+
+    pthread_exit(NULL);
+}
+
+void *writer(void *arg) {
+    int writer_id = *(int *)arg;
+
+    // Writer trying to write
+    printf("Writer %d is trying to write...\n", writer_id);
+    sem_wait(&db);
+
+    // Writing data
+    printf("Writer %d is writing data...\n", writer_id);
+    sleep(1);
+
+    // Writer leaving after writing
+    sem_post(&db);
+
+    printf("Writer %d is leaving...\n", writer_id);
+    sleep(1);
+
+    pthread_exit(NULL);
+}
+
+int main() {
+    pthread_t readers[2], writers[2];
+    int reader_ids[2] = {1, 2};
+    int writer_ids[2] = {1, 2};
+
+    sem_init(&mutex, 0, 1);
+    sem_init(&db, 0, 1);
+
+    for (int i = 0; i < 2; i++) {
+        pthread_create(&readers[i], NULL, reader, &reader_ids[i]);
+        pthread_create(&writers[i], NULL, writer, &writer_ids[i]);
+    }
+
+    // Let the threads run for a while
+    sleep(16);
+
+    // Clean up
+    for (int i = 0; i < 2; i++) {
+        pthread_cancel(readers[i]);
+        pthread_cancel(writers[i]);
+        pthread_join(readers[i], NULL);
+        pthread_join(writers[i], NULL);
+    }
+
+    sem_destroy(&mutex);
+    sem_destroy(&db);
+
+    return 0;
+}
+
+Output:
+Reader 1 is trying to read...
+Reader 1 is reading...
+Writer 2 is trying to write...
+Writer 1 is trying to write...
+Reader 2 is trying to read...
+Reader 2 is reading...
+Reader 2 is leaving...
+Reader 1 is leaving...
+Writer 2 is writing data...
+Writer 2 is leaving...
+Writer 1 is writing data...
+Writer 1 is leaving...
+
+*******************************************************************
+
+b.	 Using Mutexes
+
+Code:
+#include <stdio.h>
+#include <pthread.h>
+#include <unistd.h>
+
+pthread_mutex_t mutex;
+pthread_mutex_t db;
+int readCount = 0;
+
+void *reader(void *arg) {
+    int reader_id = *(int *)arg;
+
+    // Reader trying to read
+    printf("Reader %d is trying to read...\n", reader_id);
+    pthread_mutex_lock(&mutex);
+    readCount++;
+    if (readCount == 1) {
+        pthread_mutex_lock(&db);
+    }
+    pthread_mutex_unlock(&mutex);
+
+    // Reading data
+    printf("Reader %d is reading...\n", reader_id);
+    sleep(1);
+
+    // Reader leaving
+    pthread_mutex_lock(&mutex);
+    readCount--;
+    if (readCount == 0) {
+        pthread_mutex_unlock(&db);
+    }
+    pthread_mutex_unlock(&mutex);
+
+    printf("Reader %d is leaving...\n", reader_id);
+    sleep(1);
+
+    pthread_exit(NULL);
+}
+
+void *writer(void *arg) {
+    int writer_id = *(int *)arg;
+
+    // Writer trying to write
+    printf("Writer %d is trying to write...\n", writer_id);
+    pthread_mutex_lock(&db);
+
+    // Writing data
+    printf("Writer %d is writing data...\n", writer_id);
+    sleep(1);
+
+    // Writer leaving after writing
+    pthread_mutex_unlock(&db);
+
+    printf("Writer %d is leaving...\n", writer_id);
+    sleep(1);
+
+    pthread_exit(NULL);
+}
+
+int main() {
+    pthread_t readers[2], writers[2];
+    int reader_ids[2] = {1, 2};
+    int writer_ids[2] = {1, 2};
+
+    for (int i = 0; i < 2; i++) {
+        pthread_create(&readers[i], NULL, reader, &reader_ids[i]);
+        pthread_create(&writers[i], NULL, writer, &writer_ids[i]);
+    }
+
+    // Let the threads run for a while
+    sleep(10);
+
+    // Clean up
+    for (int i = 0; i < 2; i++) {
+        pthread_cancel(readers[i]);
+        pthread_cancel(writers[i]);
+        pthread_join(readers[i], NULL);
+        pthread_join(writers[i], NULL);
+    }
+
+    return 0;
+}
+
+Output:
+Reader 1 is trying to read...
+Reader 1 is reading...
+Reader 2 is trying to read...
+Reader 2 is reading...
+Writer 2 is trying to write...
+Writer 1 is trying to write...
+Reader 1 is leaving...
+Reader 2 is leaving...
+Writer 2 is writing data...
+Writer 2 is leaving...
+Writer 1 is writing data...
+Writer 1 is leaving...

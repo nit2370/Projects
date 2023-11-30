@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Function to calculate factorial using recursion
+factorial_recursive() {
+    num=$1
+    if [ $num -le 1 ]; then
+        echo 1
+    else
+        subresult=$(factorial_recursive $((num - 1)))
+        echo $((num * subresult))
+    fi
+}
+
+# Function to calculate factorial without recursion
+factorial_non_recursive() {
+    num=$1
+    result=1
+
+    for ((i = 1; i <= num; i++)); do
+        result=$((result * i))
+    done
+
+    echo $result
+}
+
+# Read the number from the user
+read -p "Enter a number: " number
+
+# Calculate factorial using recursion
+recursive_result=$(factorial_recursive $number)
+echo "Factorial of $number (using recursion) is: $recursive_result"
+
+# Calculate factorial without recursion
+non_recursive_result=$(factorial_non_recursive $number)
+echo "Factorial of $number (without recursion) is: $non_recursive_result"

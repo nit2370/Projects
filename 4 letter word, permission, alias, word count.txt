@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# i. To redirect the output of cp command to a file named outfile.
+case "$1" in
+    "i")
+        cp test.txt outfile
+        ;;
+esac
+
+# ii. To select the lines in a file which has 4 letter words in that line and redirect the output to the file named list.
+case "$1" in
+    "ii")
+        grep -E '[a-zA-Z]{4}$' test.txt > list
+        ;;
+esac
+
+# iii. Assign write permission to owner and remove read permission from group user for an ordinary file named test by relative way.
+case "$1" in
+    "iii")
+        chmod u+w test.txt
+        chmod g-r test.txt
+        ;;
+esac
+
+# iv. To create an alias named ls that always lists all the files, including hidden files:
+case "$1" in
+    "iv")
+        alias ls='ls -a'
+        ;;
+esac
+
+# v. To count the number of words in the list file:
+case "$1" in
+    "v")
+        wc -w test.txt
+        ;;
+esac

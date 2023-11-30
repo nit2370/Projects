@@ -1,0 +1,35 @@
+#!/bin/bash
+
+echo "Enter array size"
+read n
+
+echo "Enter array elements"
+
+i=0
+while [ $i -lt $n ]; do
+  read nos[$i]
+  i=`expr $i + 1`
+done
+
+echo "Array elements"
+i=0
+while [ $i -lt $n ]; do
+  echo ${nos[$i]}
+  i=`expr $i + 1`
+done
+
+# Now do the sorting of numbers
+for ((i = 0; i < n; i++)); do
+  for ((j = i; j < n; j++)); do
+    if [ ${nos[$i]} -gt ${nos[$j]} ]; then
+      t=${nos[$i]}
+      nos[$i]=${nos[$j]}
+      nos[$j]=$t
+    fi
+  done
+done
+
+echo "Sorted elements"
+for ((i = 0; i < n; i++)); do
+  echo ${nos[$i]}
+done

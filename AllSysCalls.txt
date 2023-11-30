@@ -1,0 +1,225 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <string.h>
+#include <signal.h>
+#include <sys/stat.h>
+#include <time.h>
+#include <pwd.h>
+#include <grp.h>
+// signal handler function for alarm
+void handleAlarm(int signum)
+{
+    printf("Alarm Signal received!\n");
+}
+
+int main()
+{
+    int choice;
+
+    while (1)
+    {
+        printf("\nMenu:\n");
+        printf("1. File-related System Calls\n");
+        printf("2. Process-related System Calls\n");
+        printf("3. Communication-related System Calls\n");
+        printf("4. Information-related System Calls\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice)
+        {
+        case 1:
+        {
+            int fd;
+            char buffer[80];
+            char msg[50] = "hello from nitin choudhary!!";
+            fd = open("test.txt", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+            printf("fd %d\n", fd);
+
+            if (fd != -1)
+            {
+                printf("test.txt opened with read write access\n");
+                write(fd, msg, sizeof(msg));
+                lseek(fd, 0, SEEK_SET);
+                read(fd, buffer, sizeof(msg));
+                printf("%s was written to my file\n", buffer);
+                close(fd);
+
+                // Using link system call
+                if (link("f11", "linked_file.txt") == 0)
+                    printf("Hard link created successfully.\n");
+                else
+                    perror("Hardlink creation Unsuccessfull!");
+
+                // Using stat system call
+                struct stat fileStat;
+                if (stat("f11", &fileStat) == 0)
+                {
+                    // File Size
+                    printf("File Size: %ld bytes\n", fileStat.st_size);
+
+                    // File Permissions
+                    printf("File Permissions: %o\n", fileStat.st_mode & 0777);
+                    // Owner User and Group
+                    struct passwd *user_info = getpwuid(fileStat.st_uid);
+                    struct group *group_info = getgrgid(fileStat.st_gid);
+                    if (user_info && group_info)
+                    {
+                        printf("Owner User: %s\n", user_info->pw_name);
+                        printf("Owner Group: %s\n", group_info->gr_name);
+                    }
+
+                    // Last Modification Time
+                    struct tm *time_info = localtime(&fileStat.st_mtime);
+                    char time_str[100];
+                    strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", time_info);
+                    printf("Last Modification Time: %s\n", time_str);
+                }
+                else
+                {
+                    perror("stat unsuccessful!");
+                }
+
+                // Using unlink system call
+                if (unlink("linked_file.txt") == 0)
+                    printf("Hard link removed successfully.\n");
+                else
+                    perror("Unlink Unsuccessfull!");
+            }
+            else
+            {
+                perror("Error Opening File");
+            }
+            break;
+        }
+        case 2:
+        {
+
+            int status;
+
+            pid_t childPid = fork();
+
+            if (childPid < 0)
+            {
+                perror("Fork failed");
+                exit(1);
+            }
+            else if (childPid == 0)
+            {
+                // Child process
+                printf("Child process with PID: %d\n", getpid());
+
+                exit(0);
+            }
+            else
+            {
+                // Parent process
+                printf("Parent process with PID: %d\n", getpid());
+                wait(&status);
+                if (WIFEXITED(status))
+                {
+                    printf("Child process with PID %d exited with status %d\n", childPid, WEXITSTATUS(status));
+                }
+            }
+            break;
+        }
+
+        case 3:
+        {
+            // Using pipe for inter-process communication
+            int pipefd[2];
+            char pipeBuffer[20];
+            char pipeMsg[] = "Hello, pipe!";
+
+            if (pipe(pipefd) == -1)
+            {
+                perror("pipe system call unsuccessful!");
+                exit(1);
+            }
+
+            // Creating a child process
+            pid_t childPid = fork();
+
+            if (childPid < 0)
+            {
+                perror("Fork failed");
+                exit(1);
+            }
+            else if (childPid == 0)
+            {
+                // Child process
+                close(pipefd[0]);                               // Close read end of pipe
+                write(pipefd[1], pipeMsg, strlen(pipeMsg) + 1); // Write to pipe
+                close(pipefd[1]);
+                exit(0);
+            }
+            else
+            {
+                // Parent process
+                close(pipefd[1]);                                // Close write end of pipe
+                read(pipefd[0], pipeBuffer, sizeof(pipeBuffer)); // Read from pipe
+                close(pipefd[0]);
+
+                printf("Parent received from pipe: %s\n", pipeBuffer);
+                wait(NULL); // Wait for child process to complete
+            }
+
+            // Using shared memory (shmget and mmap)
+            int shmId = shmget(IPC_PRIVATE, sizeof(int), IPC_CREAT | 0666);
+
+            if (shmId == -1)
+            {
+                perror("shmget call unsuccessful!");
+                exit(1);
+            }
+
+            int *sharedData = (int *)shmat(shmId, NULL, 0);
+
+            *sharedData = 42;
+
+            printf("Parent shared data: %d\n", *sharedData);
+
+            shmdt(sharedData);
+            shmctl(shmId, IPC_RMID, NULL); // Clean up shared memory
+            break;
+        }
+        case 4:
+        {
+            // Using alarm and sleep system calls
+            signal(SIGALRM, handleAlarm); // Set the signal handler for SIGALRM
+
+            printf("Setting alarm for 5 seconds...\n");
+            alarm(5); // Schedule an alarm to trigger in 5 seconds
+
+            printf("Waiting for the alarm to trigger...\n");
+
+            // Simulate some work while waiting for the alarm
+            for (int i = 1; i <= 10; i++)
+            {
+                printf("Working... (%d seconds)\n", i);
+                sleep(1); // Simulate work for 1 second
+            }
+
+            // This part of the code will execute after the alarm triggers
+            printf("After alarm, program exiting.\n");
+            break;
+        }
+
+        case 5:
+            printf("Exiting program.\n");
+            exit(0);
+        default:
+            printf("Invalid choice\n");
+        }
+    }
+
+    return 0;
+}

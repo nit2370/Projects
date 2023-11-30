@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# Task a: Redirect the output of the `mv` command to a file named `outfile` and use it as input for remaining commands.
+case "$1" in
+    "a")
+        mv test.txt f11
+        ;;
+esac
+
+# Task b: List all hidden files under the current directory and store them in a file named `hidden`.
+case "$1" in
+    "b")
+        ls -a > hidden
+        ;;
+esac
+
+# Task c: Assign write permission to the group user and remove execute permission from the owner for an ordinary file named `test` by absolute way.
+case "$1" in
+    "c")
+        chmod g+w,o-x f11
+        ;;
+esac
+
+# Task d: To create a soft and hard link for a given file.
+case "$1" in
+    "d")
+        ln -s source_file symbolic_link   # For a symbolic link
+        ln source_file hard_link          # For a hard link
+        ;;
+esac
+
+# Task e: To convert lowercase to uppercase for a given file.
+case "$1" in
+    "e")
+        tr '[a-z] [A-Z]' < f11 > output_file11
+        ;;
+esac
+
+# Task f: To extract the 2nd and 3rd characters of a given file.
+case "$1" in
+    "f")
+        cat f11 | cut -c 2,3
+        ;;
+esac
+
+# Task g: To display how many times lines are repeated in a given file.
+case "$1" in
+    "g")
+        sort f11 | uniq -c
+        ;;
+esac

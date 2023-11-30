@@ -1,0 +1,12 @@
+#!/bin/bash
+input_number=$1
+sum=0
+number=$input_number
+
+while [ $number -gt 0 ]; do
+  digit=$((number % 10))
+  sum=$((sum + digit))
+  number=$((number / 10))
+done
+
+echo "Sum of digits of $input_number is: $sum"
