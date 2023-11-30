@@ -1,0 +1,16 @@
+#!/bin/bash
+add=$(($1 + $2))
+sub=$(($1 - $2))
+mul=$(($1 * $2))
+div=$(($1 / $2))
+echo "Add = $add"
+echo "Sub = $sub"
+echo "Mul = $mul"
+echo "Div = $div"
+echo "1st arg = $1"
+echo "Total args = $#"
+echo "All args = $@"
+echo "All args as a single string = $*"
+echo "Exit status of previous command = $?"
+echo "PID of current shell = $$"
+echo "PID of last background process = $!"
