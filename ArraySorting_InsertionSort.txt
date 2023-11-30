@@ -1,0 +1,37 @@
+#!/bin/bash
+
+echo "Enter array size"
+read n
+
+echo "Enter array elements"
+
+i=0
+while [ $i -lt $n ]; do
+  read nos[$i]
+  i=`expr $i + 1`
+done
+
+echo "Array elements"
+i=0
+while [ $i -lt $n ]; do
+  echo ${nos[$i]}
+  i=`expr $i + 1`
+done
+
+# Insertion Sort
+for ((i = 1; i < n; i++)); do
+  key=${nos[$i]}
+  j=`expr $i - 1`
+
+  while [ $j -ge 0 ] && [ ${nos[$j]} -gt $key ]; do
+    nos[`expr $j + 1`]=${nos[$j]}
+    j=`expr $j - 1`
+  done
+
+  nos[`expr $j + 1`]=$key
+done
+
+echo "Sorted elements (Insertion Sort)"
+for ((i = 0; i < n; i++)); do
+  echo ${nos[$i]}
+done
