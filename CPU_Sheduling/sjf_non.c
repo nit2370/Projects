@@ -24,7 +24,7 @@ int main() {
     }
 
     while (1) {
-        int c = n, min = 999;
+        int c = -1, min = 999;
         if (tot == n)
             break;
 
