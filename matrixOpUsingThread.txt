@@ -1,0 +1,83 @@
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+
+pthread_t thread[3];
+int A[3][3], B[3][3], sum[3][3], sub[3][3], product[3][3];
+
+void* matrix_operation(void* arg)
+{
+    intptr_t row = (intptr_t)arg;
+    int j, k;
+
+    for (j = 0; j < 3; j++) {
+        sum[row][j] = A[row][j] + B[row][j];
+        sub[row][j] = A[row][j] - B[row][j];
+        product[row][j] = 0;
+        for (k = 0; k < 3; k++) {
+            product[row][j] += A[row][k] * B[k][j];
+        }
+    }
+    pthread_exit(NULL);
+}
+
+int main()
+{
+    int i,j;
+    intptr_t row;
+
+    printf("Enter elements of Matrix A:\n");
+    for (i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            scanf("%d", &A[i][j]);
+        }
+    }
+
+    printf("Enter elements of Matrix B:\n");
+    for (i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            scanf("%d", &B[i][j]);
+        }
+    }
+
+    // Creating threads for matrix operations
+    for (i = 0; i < 3; i++) {
+        pthread_create(&thread[i], NULL, &matrix_operation, (void*)(intptr_t)i);
+    }
+
+    // Waiting for join threads after computations
+    for (i = 0; i < 3; i++) {
+        pthread_join(thread[i], NULL);
+    }
+
+    // Display Addition of A and B
+    printf("\nSum of Matrix A and B:\n");
+    for (i = 0; i < 3; i++) {
+        for (j = 0; j < 3; j++) {
+            printf("%d ", sum[i][j]);
+        }
+        printf("\n");
+    }
+
+    // Display Subtraction of A and B
+    printf("\nSubtraction of Matrix A and B:\n");
+    for (i = 0; i < 3; i++) {
+        for (j = 0; j < 3; j++) {
+            printf("%d ", sub[i][j]);
+        }
+        printf("\n");
+    }
+
+    // Display Multiplication of A and B
+    printf("\nProduct of Matrix A and B:\n");
+    for (i = 0; i < 3; i++) {
+        for (j = 0; j < 3; j++) {
+            printf("%d ", product[i][j]);
+        }
+        printf("\n");
+    }
+
+    return 0;
+}
+
