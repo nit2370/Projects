@@ -1,0 +1,46 @@
+#!/bin/bash
+echo "enter fllename"
+read fname
+
+if [ -e $fname ]
+then
+echo "file exist"
+else
+echo "file does not exist"
+fi
+
+if [ -f $fname ]
+then
+echo "file is regular"
+elif [ -d $fname ]
+then
+echo "file is directory"
+elif [ -c $fname ]
+then
+echo "file is character device file"
+elif [ -b $fname ]
+then
+echo "file is block device file"
+elif [ -L $fname  ]
+then
+echo "file is link"
+fi
+
+if [ -r $fname ]
+then
+echo "file have read permission"
+else
+echo "file does not have read permission"
+fi
+if [ -w $fname ]
+then
+echo "file have write permission"
+else
+echo "file does not have write permission"
+fi
+if [ -x $fname ]
+then
+echo "file have execute permission"
+else
+echo "file does not have execute permission"
+fi
