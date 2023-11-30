@@ -15,7 +15,6 @@ void PrempPriority()
     int ta[n];
     int wt[n];
     int f[n];
-    int k[n];
     int priority[n];
     int i, st = 0, tot = 0;
 
@@ -26,7 +25,6 @@ void PrempPriority()
         scanf("%d", &at[i]);
         printf("Enter burst time for process %d: ", i + 1);
         scanf("%d", &bt[i]);
-        k[i] = bt[i];
         f[i] = 0;
         printf("Enter priority for process %d: ", i + 1);
         scanf("%d", &priority[i]);
