@@ -13,7 +13,6 @@ int main() {
     int ta[n];
     int wt[n];
     int f[n];
-    int k[n];
     int i, st = 0, tot = 0;
 
     for (i = 0; i < n; i++) {
@@ -22,7 +21,6 @@ int main() {
         scanf("%d", &at[i]);
         printf("Enter burst time for process %d: ", i + 1);
         scanf("%d", &bt[i]);
-        k[i] = bt[i];
         f[i] = 0;
     }
 
