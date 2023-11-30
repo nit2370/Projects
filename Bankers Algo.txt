@@ -81,9 +81,9 @@ bool isSafe(int processes[10], int avail[10], int max[10][10], int alloc[10][10]
         }
         printf("\n");
     }
-    printf("***************************************");
+    printf("************************************");
     printf("\n");
-    printf("Safe Sequence: ");
+    printf("* Safe Sequence: ");
     for (int i = 0; i < n; i++)
     {
         printf("%d", processes[safeSeq[i]]);
@@ -92,33 +92,66 @@ bool isSafe(int processes[10], int avail[10], int max[10][10], int alloc[10][10]
             printf("-> ");
         }
     }
+    printf(" *");
     printf("\n");
+    printf("************************************");
     printf("\n");
+
+    printf("Available Vector after Safe Sequence: ");
+    for (int i = 0; i < m; i++)
+    {
+        printf("%d ", avail_new[i]);
+    }
+    printf("\n");
+
     return true;
 }
 
 int main()
 {
     int n, m;
-    int processes[10] = {1, 2, 3, 4, 5};
-    int max[10][10] = {
-        {0, 0, 1, 2},
-        {1, 7, 5, 0},
-        {2, 3, 5, 6},
-        {0, 6, 5, 2},
-        {0, 6, 5, 6}};
-    int alloc[10][10] = {
-        {0, 0, 1, 2},
-        {1, 0, 0, 0},
-        {1, 3, 5, 4},
-        {0, 6, 3, 2},
-        {0, 0, 1, 4}};
-    int avail[10] = {1, 5, 2, 0};
+    printf("Enter the number of processes: ");
+    scanf("%d", &n);
+    printf("Enter the number of resources: ");
+    scanf("%d", &m);
 
-    n = 5; // Number of processes
-    m = 4; // Number of resources
+    int processes[10];
+    int max[10][10];
+    int alloc[10][10];
+    int avail[10];
 
+    printf("Enter the processes: ");
+    for (int i = 0; i < n; i++)
+    {
+        scanf("%d", &processes[i]);
+    }
+
+    printf("Enter the Allocation Matrix:\n");
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < m; j++)
+        {
+            scanf("%d", &alloc[i][j]);
+        }
+    }
+
+    printf("Enter the Max Matrix:\n");
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < m; j++)
+        {
+            scanf("%d", &max[i][j]);
+        }
+    }
+
+    printf("Enter the Available Vector:\n");
+    for (int i = 0; i < m; i++)
+    {
+        scanf("%d", &avail[i]);
+    }
+    printf("**************************************");
     printf("\n");
     isSafe(processes, avail, max, alloc, n, m);
+
     return 0;
 }
