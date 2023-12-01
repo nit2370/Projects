@@ -1,0 +1,25 @@
+#!/bin/bash
+
+maxLengthFileName=""
+maxLength=0
+
+# Loop through each file in the current directory
+for file in *; do
+    # Get the length of the current file name
+    currentLength=${#file}
+
+    # Check if maxLengthFileName is empty or the current length is greater than the current maximum length
+    if [ -z "$maxLengthFileName" ] || [ $currentLength -gt $maxLength ]; then
+        # Update maxLengthFileName and maxLength with the current file information
+        maxLengthFileName="$file"
+        maxLength=$currentLength
+    fi
+done
+
+# If a maximum length file name is found, print it. Otherwise, print an error message.
+if [ -n "$maxLengthFileName" ]; then
+    echo "The largest file name is '$maxLengthFileName' with a length of $maxLength characters."
+else
+    echo "Error: No files found in the current directory."
+    exit 1
+fi
