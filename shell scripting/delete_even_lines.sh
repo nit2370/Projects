@@ -1,14 +1,21 @@
 #!/bin/bash
 
-str=$(cat ./practice/shell/additional/vowel.txt)
-
+# Set the Internal Field Separator (IFS) to newline
 IFS=$'\n'
+
+# Initialize a counter variable 'c'
 c=1
-for i in $str
+
+# Read lines from input.txt and process them
+while IFS= read -r line
 do
-    if [[ `expr $c % 2` -eq 0 ]]
+    # Check if the line number is even
+    if ((c % 2 == 0))
     then
-        echo "$i" | cat >> ./practice/shell/additional/output.txt
+        # Append the even lines to output.txt
+        echo "Processing line: $line"
+        echo "$line" >> output.txt
     fi
-    c=`expr $c + 1`
-done
+    # Increment the counter
+    ((c++))
+done < abcd.txt
